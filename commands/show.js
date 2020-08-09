@@ -15,25 +15,23 @@ module.exports = {
         if(args[0] === 'meetings') {
             createEmbed('#0099ff', 'Meetings','List of all upcoming meetings', 
                         'https://i.ibb.co/VgRkdt8/baseline-schedule-white-18dp.png',
-                        'SD Bot [meetings]', bot_commands);
+                        'SD Bot [meetings]', message.channel);
         } else if (args[0] === 'deadlines') {
             createEmbed('#9e0000', 'Deadlines','List of all upcoming deadlines',
                         'https://i.ibb.co/2M6jJkq/baseline-event-white-18dp.png', 
-                        'SD Bot [deadlines]', bot_commands);
+                        'SD Bot [deadlines]', message.channel);
         } else if (args[0] === 'all') {
             createEmbed('#9e0000', 'Deadlines','List of all upcoming deadlines',
                         'https://i.ibb.co/2M6jJkq/baseline-event-white-18dp.png',
-                        'SD Bot [deadlines]', bot_commands);
+                        'SD Bot [deadlines]', message.channel);
             createEmbed('#0099ff', 'Meetings','List of all upcoming meetings', 
                         'https://i.ibb.co/VgRkdt8/baseline-schedule-white-18dp.png',
-                        'SD Bot [meetings]', bot_commands);
+                        'SD Bot [meetings]', message.channel);
         }
     },
 };
 
 function createEmbed(color, title, description, thumbnail, footer, channel) {
-    let botChannel = client.channels.cache.get(channel);
-
     let list = [];
     if(title === 'Meetings') {
         for(meeting in client.meetings) {
@@ -56,6 +54,7 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
         }
     }
 
+    // Sort the array based on the dates
     list.sort(function (a, b) {
         if(title === 'Meetings') {
             return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
@@ -79,13 +78,13 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
             list.forEach(entry => {
                 embed.addField(`(ID:${entry.id}) Meeting`, `${entry.date} ${entry.time} ${entry.meridiem}`)
             });
-                botChannel.send(embed)
+                channel.send(embed)
                 .catch(console.error);
         } else if(title === 'Deadlines') {
             list.forEach(entry => {
                 embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date}`)
             });
-                botChannel.send(embed)
+                channel.send(embed)
                 .catch(console.error);
     }
 };

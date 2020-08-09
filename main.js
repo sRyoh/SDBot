@@ -11,7 +11,7 @@ client.deadlines = require('./deadlines.json');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 const MIN_INTERVAL = 60 * 1000;
-const DAY_INTERVAL = 24 * 60 * 60 * 1000; 
+const DAY_INTERVAL = 10 * 1000; 
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -25,14 +25,15 @@ client.once('ready', () => {
 
 // Event that will create an embed for deadlines and meetings every 24 hours
 client.on('ready', () => {
+    const botChannel = client.channels.cache.get(meetings_deadlines);
     // Create meeting and deadline embeds every 24 hours
     setInterval(() => createEmbed('#9e0000', 'Deadlines','List of all upcoming deadlines',
                                   'https://i.ibb.co/2M6jJkq/baseline-event-white-18dp.png',
-                                  'SD Bot [deadlines]', meetings_deadlines), DAY_INTERVAL);
+                                  'SD Bot [deadlines]', botChannel), DAY_INTERVAL);
 
     setInterval(() => createEmbed('#0099ff', 'Meetings','List of all upcoming meetings', 
                                   'https://i.ibb.co/VgRkdt8/baseline-schedule-white-18dp.png',
-                                  'SD Bot [meetings]', meetings_deadlines), DAY_INTERVAL);
+                                  'SD Bot [meetings]', botChannel), DAY_INTERVAL);
 });
 
 // Event for checking a week before a deadline is due
@@ -159,8 +160,6 @@ client.on('message', message => {
 client.login(token);    
 
 function createEmbed(color, title, description, thumbnail, footer, channel) {
-    let botChannel = client.channels.cache.get(channel);
-
     // Create an array of either deadline sor meetings
     // Used for adding fields to the embed to show the deadlines or meetings
     let list = [];
@@ -209,13 +208,13 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
             list.forEach(entry => {
                 embed.addField(`(ID:${entry.id}) Meeting`, `${entry.date} ${entry.time} ${entry.meridiem}`)
             });
-                botChannel.send(embed)
+                channel.send(embed)
                 .catch(console.error);
         } else if(title === 'Deadlines') {
             list.forEach(entry => {
                 embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date}`)
             });
-                botChannel.send(embed)
+                channel.send(embed)
                 .catch(console.error);
     }
 };
