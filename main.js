@@ -11,7 +11,7 @@ client.deadlines = require('./deadlines.json');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 const MIN_INTERVAL = 60 * 1000;
-const DAY_INTERVAL = 10 * 1000; 
+const DAY_INTERVAL = 24 * 60 * 60 * 1000; 
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
