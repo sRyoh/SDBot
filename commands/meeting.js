@@ -14,8 +14,18 @@ module.exports = {
             reply += `\nType !help or !help meeting for the proper usage.`;
             message.channel.send(reply);
             return;
+        } else if(args[0].length !== 10) {
+            let reply = `Invalid date format, ${message.author}`;
+            reply += `\nExample format: 01/01/2020`
+            message.channel.send(reply);
+            return;
+        } else if(args[1].length !== 5) {
+            let reply = `Invalid time format, ${message.author}`;
+            reply += `\nExample format: 01:00`
+            message.channel.send(reply);
+            return;
         }
-
+        
         let index = 0;
         if(!client.meetings.length) {
             for(meeting in client.meetings) {

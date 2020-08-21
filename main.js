@@ -44,7 +44,7 @@ client.on('ready', () => {
 
         let oneWeekLeft = new Date();
         oneWeekLeft.setDate(oneWeekLeft.getDate() + 7);
-        let date = `${oneWeekLeft.getMonth() + 1}/${oneWeekLeft.getDate()}/${oneWeekLeft.getFullYear()}`;
+        let date = `${('0'+(oneWeekLeft.getMonth() + 1)).slice(-2)}/${('0'+oneWeekLeft.getDate()).slice(-2)}/${oneWeekLeft.getFullYear()}`;
 
         // Loop through JSON file and check if it is a week before a deadline is due
         for(deadline in client.deadlines) {
@@ -65,7 +65,7 @@ client.on('ready', () => {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
         let today = new Date();
-        let date = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+        let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
 
         // Loop through JSON file and check each meeting's time
         for(meeting in client.meetings) {
@@ -74,17 +74,8 @@ client.on('ready', () => {
             // Skip this meeting if the current date and meeting's date does not match
             if(_date != date) continue;
             
-            let hour, minute;
-            //                                             <HH>:<MM>
-            // Length can vary if the user input as <1-9/10-12>:<00-59>
-            if(client.meetings[meeting].time.length === 5) {
-                hour = client.meetings[meeting].time[0] + client.meetings[meeting].time[1];
-                minute = client.meetings[meeting].time[3] + client.meetings[meeting].time[4];
-            } else {
-                hour = client.meetings[meeting].time[0];
-                minute = client.meetings[meeting].time[2] + client.meetings[meeting].time[3];
-            }
-
+            let hour = client.meetings[meeting].time[0] + client.meetings[meeting].time[1];
+            let minute = client.meetings[meeting].time[3] + client.meetings[meeting].time[4];
             let meridiem = client.meetings[meeting].meridiem;
             // Convert 12H format to 24H format
             if(meridiem === "AM" && hour === "12") {
@@ -94,11 +85,15 @@ client.on('ready', () => {
             }
             
             // REMINDER: this won't work when it is 12AM as it goes to -1
-            let _time = `${hour-1}:${minute}`
-            let time = (`${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`);
+            let _time = `${hour}:${minute}`
+            let oneHourLeft = `${hour-1}:${minute}`
+            let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
 
-            if(_time === time) {
+            if(oneHourLeft === time) {
                 botChannel.send("@everyone meeting in 1 hour.")
+                .catch(console.error);
+            } else if(_time === time) {
+                botChannel.send("@everyone meeting in starts now.")
                 .catch(console.error);
             }
         }
@@ -166,16 +161,23 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
     if(title === 'Meetings') {
         for(meeting in client.meetings) {
             let m = client.meetings[meeting];
+            
+            // if(m.date.charAt(0) === '0') {m.date = m.date.slice(1)};
+            // if(m.time.charAt(0) === '0') {m.time = m.time.slice(1)};
+
             list.push({
                 "id" : meeting,
                 "date" : m.date,
                 "time" : m.time,
-                'meridiem' : m.meridiem
+                "meridiem" : m.meridiem
             });
         }
     } else if(title === 'Deadlines') {
         for(deadline in client.deadlines) {
             let d = client.deadlines[deadline];
+
+            // if(d.date.charAt(0) === '0') d.date = d.date.slice(1);
+
             list.push({
                 "id" : deadline,
                 "name" : d.name,
@@ -191,6 +193,7 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
         } else if(title === 'Deadlines') {
             let date1 = a.date.split('/');
             let date2 = b.date.split('/');
+            // Compares first by year, then month, lastly day
             return date1[2] - date2[2] || date1[0] - date2[0] || date1[1] - date2[1];
         }
     });

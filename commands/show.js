@@ -40,7 +40,7 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
                 "id" : meeting,
                 "date" : m.date,
                 "time" : m.time,
-                'meridiem' : m.meridiem
+                "meridiem" : m.meridiem
             });
         }
     } else if(title === 'Deadlines') {
