@@ -24,8 +24,14 @@ client.once('ready', () => {
 });
 
 // Event that will create an embed for deadlines and meetings every 24 hours
-client.on('ready', () => {
+client.on('ready', () => {    
     const botChannel = client.channels.cache.get(meetings_deadlines);
+
+    // Clean up the channel's previous messages
+    setInterval(() => botChannel.bulkDelete(100)
+                      .then(messages => console.log(`Bulk deleted ${messages.size} messages`))
+                      .catch(console.error), DAY_INTERVAL);
+
     // Create meeting and deadline embeds every 24 hours
     setInterval(() => createEmbed('#9e0000', 'Deadlines','List of all upcoming deadlines',
                                   'https://i.ibb.co/2M6jJkq/baseline-event-white-18dp.png',
@@ -65,6 +71,7 @@ client.on('ready', () => {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
         let today = new Date();
+        today.setHours(today.getHours() - 4); // Digital Ocean's server is ahead by 4 hours
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
 
         // Loop through JSON file and check each meeting's time
