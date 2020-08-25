@@ -24,10 +24,12 @@ module.exports = {
             reply += `\nExample format: 01:00`
             message.channel.send(reply);
             return;
-        } else if(args[3].toUpperCase() !== 'AM' || args[2].toUpperCase() !== 'PM') {
-            let reply = `Invalid meridiem format, ${message.author}`;
-            reply += `\nExample format: 01:00 PM`
-            message.channel.send(reply);
+        } else if(args[3].toUpperCase() !== 'AM') {
+            if(args[3].toUpperCase() !== 'PM') {
+                let reply = `Invalid meridiem format, ${message.author}`;
+                reply += `\nExample format: 01:00 PM`
+                message.channel.send(reply);
+            }
         }
         
         let index = 0;
