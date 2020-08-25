@@ -22,7 +22,9 @@ module.exports = {
                 }
             });
             message.channel.send(`${message.author} here is the updated list of meetings.`);
-            meetings(message);
+            createEmbed('#0099ff', 'Meetings','List of all upcoming meetings', 
+                        'https://i.ibb.co/VgRkdt8/baseline-schedule-white-18dp.png',
+                        'SD Bot [meetings]', message.channel);
         } else if(args[0] === 'deadline') {
             delete client.deadlines[args[1]];
             fs.writeFile('./deadlines.json', JSON.stringify(client.deadlines, null, 4), err => {
@@ -32,29 +34,65 @@ module.exports = {
                 }
             });
             message.channel.send(`${message.author} here is the updated list of meetings.`);
-            deadlines(message);
+            createEmbed('#9e0000', 'Deadlines','List of all upcoming deadlines',
+                        'https://i.ibb.co/2M6jJkq/baseline-event-white-18dp.png', 
+                        'SD Bot [deadlines]', message.channel);
         }
     },
 };
 
-function meetings(message) {
-    let reply = "```List of all meetings";
-    reply += "\n--------------------"
-    for(meeting in client.meetings) {
-        let m = client.meetings[meeting];
-        reply += `\n${m.date} ${m.time} ${m.meridiem}`;
+function createEmbed(color, title, description, thumbnail, footer, channel) {
+    // Create an array of either deadline sor meetings
+    // Used for adding fields to the embed to show the deadlines or meetings
+    let list = [];
+    if(title === 'Meetings') {
+        for(meeting in client.meetings) {
+            let m = client.meetings[meeting];
+            list.push({
+                "id" : meeting,
+                "date" : m.date,
+                "time" : m.time,
+                "meridiem" : m.meridiem
+            });
+        }
+    } else if(title === 'Deadlines') {
+        for(deadline in client.deadlines) {
+            let d = client.deadlines[deadline];
+            list.push({
+                "id" : deadline,
+                "name" : d.name,
+                "date" : d.date,
+                "time" : d.time,
+                "meridiem" : d.meridiem
+            });
+        }
     }
-    message.channel.send(reply + "```")
-    .catch(console.error);
-};
 
-function deadlines(message) {
-    let reply = "```List of all deadlines";
-    reply += "\n--------------------"
-    for(deadline in client.deadlines) {
-        let d = client.deadlines[deadline];
-        reply += `\n${d.name} ${d.date}`;
+    // Sort the array based on the dates
+    list.sort(function (a, b) {
+        return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
+    });
+
+    const embed = new Discord.MessageEmbed()
+        .setColor(color)
+        .setTitle(title)
+        .setURL('http://endlesslearner.com/home') //this doesn't work
+        .setAuthor('Senior Design Bot', 'https://i.ibb.co/vxcQxLc/DBicon.png')
+        .setDescription(description)
+        .setThumbnail(thumbnail)
+        .setTimestamp()
+        .setFooter(footer)
+        if(title === 'Meetings') {
+            list.forEach(entry => {
+                embed.addField(`(ID:${entry.id}) Meeting`, `${entry.date} ${entry.time} ${entry.meridiem}`)
+            });
+                channel.send(embed)
+                .catch(console.error);
+        } else if(title === 'Deadlines') {
+            list.forEach(entry => {
+                embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date} ${entry.time} ${entry.meridiem}`)
+            });
+                channel.send(embed)
+                .catch(console.error);
     }
-    message.channel.send(reply + "```")
-    .catch(console.error);
-}
+};
