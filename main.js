@@ -42,7 +42,7 @@ client.on('ready', () => {
                                   'SD Bot [meetings]', botChannel), DAY_INTERVAL);
 });
 
-// Event for checking a week, a day, and an hour before a deadline is due
+// Event for checking a week or a day before a deadline is due
 client.on('ready', () => {
     // Checks for deadlines every 24 hours
     setInterval(function () {
@@ -56,10 +56,6 @@ client.on('ready', () => {
         oneDayDate.setDate(oneDayDate.getDate() + 1);
         let oneDayLeft = `${('0'+(oneDayDate.getMonth() + 1)).slice(-2)}/${('0'+oneDayDate.getDate()).slice(-2)}/${oneDayDate.getFullYear()}`;
 
-        let today = new Date();
-        today.setHours(today.getHours() - 4);
-        let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
-
         // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
         for(deadline in client.deadlines) {
             let _date = client.deadlines[deadline].date;
@@ -71,6 +67,22 @@ client.on('ready', () => {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
                 .catch(console.error);
             }
+        }
+    }, DAY_INTERVAL);
+});
+// Event for an hour before a deadline is due
+client.on('ready', () => {
+    // Checks for deadline's time every 1 minute
+    setInterval(function () {
+        const botChannel = client.channels.cache.get(meetings_deadlines);
+
+        let today = new Date();
+        today.setHours(today.getHours() - 4);
+        let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
+
+        // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
+        for(deadline in client.deadlines) {
+            let _date = client.deadlines[deadline].date;
 
             if(_date != date) continue;
 
@@ -90,14 +102,11 @@ client.on('ready', () => {
             let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
 
             if(time === oneHourLeft) {
-                botChannel.send("@everyone meeting in 1 hour.")
-                .catch(console.error);
-            } else if(time === _time) {
-                botChannel.send("@everyone meeting in starts now.")
+                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in an hour.`)
                 .catch(console.error);
             }
         }
-    }, DAY_INTERVAL);
+    }, MIN_INTERVAL);
 });
 
 // Event for checking an hour before meetings
