@@ -29,6 +29,7 @@ module.exports = {
                 let reply = `Invalid meridiem format, ${message.author}`;
                 reply += `\nExample format: 01:00 PM`
                 message.channel.send(reply);
+                return;
             }
         }
         
