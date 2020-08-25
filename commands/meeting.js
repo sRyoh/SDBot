@@ -10,7 +10,7 @@ module.exports = {
 	usage : '<MM/DD/YYYY> <HH:MM> <AM/PM>',
 	execute(message, args) {
         if(args.length !== 3) {
-            let reply = `You didn't provide enough arguments, ${message.author}`;
+            let reply = `You didn't the proper arguments, ${message.author}`;
             reply += `\nType !help or !help meeting for the proper usage.`;
             message.channel.send(reply);
             return;
@@ -24,6 +24,10 @@ module.exports = {
             reply += `\nExample format: 01:00`
             message.channel.send(reply);
             return;
+        } else if(args[2].toUpperCase() !== 'AM' || args[2].toUpperCase() !== 'PM') {
+            let reply = `Invalid meridiem format, ${message.author}`;
+            reply += `\nExample format: 01:00 PM`
+            message.channel.send(reply);
         }
         
         let index = 0;

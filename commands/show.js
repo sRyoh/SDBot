@@ -49,20 +49,16 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
             list.push({
                 "id" : deadline,
                 "name" : d.name,
-                "date" : d.date
+                "date" : d.date,
+                "time" : d.time,
+                "meridiem" : d.meridiem
             });
         }
     }
 
     // Sort the array based on the dates
     list.sort(function (a, b) {
-        if(title === 'Meetings') {
-            return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
-        } else if(title === 'Deadlines') {
-            let date1 = a.date.split('/');
-            let date2 = b.date.split('/');
-            return date1[2] - date2[2] || date1[0] - date2[0] || date1[1] - date2[1];
-        }
+        return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
     });
 
     const embed = new Discord.MessageEmbed()
@@ -82,7 +78,7 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
                 .catch(console.error);
         } else if(title === 'Deadlines') {
             list.forEach(entry => {
-                embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date}`)
+                embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date} ${entry.time} ${entry.meridiem}`)
             });
                 channel.send(embed)
                 .catch(console.error);

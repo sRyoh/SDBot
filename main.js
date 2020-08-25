@@ -42,22 +42,58 @@ client.on('ready', () => {
                                   'SD Bot [meetings]', botChannel), DAY_INTERVAL);
 });
 
-// Event for checking a week before a deadline is due
+// Event for checking a week, a day, and an hour before a deadline is due
 client.on('ready', () => {
     // Checks for deadlines every 24 hours
     setInterval(function () {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
-        let oneWeekLeft = new Date();
-        oneWeekLeft.setDate(oneWeekLeft.getDate() + 7);
-        let date = `${('0'+(oneWeekLeft.getMonth() + 1)).slice(-2)}/${('0'+oneWeekLeft.getDate()).slice(-2)}/${oneWeekLeft.getFullYear()}`;
+        let oneWeekDate = new Date();
+        oneWeekDate.setDate(oneWeekDate.getDate() + 7);
+        let oneWeekLeft = `${('0'+(oneWeekDate.getMonth() + 1)).slice(-2)}/${('0'+oneWeekDate.getDate()).slice(-2)}/${oneWeekDate.getFullYear()}`;
 
-        // Loop through JSON file and check if it is a week before a deadline is due
+        let oneDayDate = new Date();
+        oneDayDate.setDate(oneDayDate.getDate() + 1);
+        let oneDayLeft = `${('0'+(oneDayDate.getMonth() + 1)).slice(-2)}/${('0'+oneDayDate.getDate()).slice(-2)}/${oneDayDate.getFullYear()}`;
+
+        let today = new Date();
+        today.setHours(today.getHours() - 4);
+        let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
+
+        // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
         for(deadline in client.deadlines) {
             let _date = client.deadlines[deadline].date;
 
-            if(_date === date) {
+            if(_date === oneWeekLeft) {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a week.`)
+                .catch(console.error);
+            } else if(_date === oneDayLeft) {
+                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
+                .catch(console.error);
+            }
+
+            if(_date != date) continue;
+
+            let hour = client.deadlines[deadline].time[0] + client.deadlines[deadline].time[1];
+            let minute = client.deadlines[deadline].time[3] + client.deadlines[deadline].time[4];
+            let meridiem = client.deadlines[deadline].meridiem;
+            // Convert 12H format to 24H format
+            if(meridiem === "AM" && hour === "12") {
+                hour = 0;
+            } else if(meridiem === "PM" && hour < 12) {
+                hour = parseInt(hour) + 12;
+            }
+            
+            // REMINDER: this won't work when it is 12AM as it goes to -1
+            let _time = `${hour}:${minute}`
+            let oneHourLeft = `${hour-1}:${minute}`
+            let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
+
+            if(time === oneHourLeft) {
+                botChannel.send("@everyone meeting in 1 hour.")
+                .catch(console.error);
+            } else if(time === _time) {
+                botChannel.send("@everyone meeting in starts now.")
                 .catch(console.error);
             }
         }
@@ -71,14 +107,13 @@ client.on('ready', () => {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
         let today = new Date();
-        today.setHours(today.getHours() - 4); // Digital Ocean's server is ahead by 4 hours
+        today.setHours(today.getHours() - 4);
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
 
         // Loop through JSON file and check each meeting's time
         for(meeting in client.meetings) {
             let _date = client.meetings[meeting].date;
 
-            // Skip this meeting if the current date and meeting's date does not match
             if(_date != date) continue;
             
             let hour = client.meetings[meeting].time[0] + client.meetings[meeting].time[1];
@@ -96,10 +131,10 @@ client.on('ready', () => {
             let oneHourLeft = `${hour-1}:${minute}`
             let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
 
-            if(oneHourLeft === time) {
+            if(time === oneHourLeft) {
                 botChannel.send("@everyone meeting in 1 hour.")
                 .catch(console.error);
-            } else if(_time === time) {
+            } else if(time === _time) {
                 botChannel.send("@everyone meeting in starts now.")
                 .catch(console.error);
             }
@@ -168,10 +203,6 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
     if(title === 'Meetings') {
         for(meeting in client.meetings) {
             let m = client.meetings[meeting];
-            
-            // if(m.date.charAt(0) === '0') {m.date = m.date.slice(1)};
-            // if(m.time.charAt(0) === '0') {m.time = m.time.slice(1)};
-
             list.push({
                 "id" : meeting,
                 "date" : m.date,
@@ -182,27 +213,19 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
     } else if(title === 'Deadlines') {
         for(deadline in client.deadlines) {
             let d = client.deadlines[deadline];
-
-            // if(d.date.charAt(0) === '0') d.date = d.date.slice(1);
-
             list.push({
                 "id" : deadline,
                 "name" : d.name,
-                "date" : d.date
+                "date" : d.date,
+                "time" : d.time,
+                "meridiem" : d.meridiem
             });
         }
     }
 
     // Sort the array based on the dates
     list.sort(function (a, b) {
-        if(title === 'Meetings') {
-            return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
-        } else if(title === 'Deadlines') {
-            let date1 = a.date.split('/');
-            let date2 = b.date.split('/');
-            // Compares first by year, then month, lastly day
-            return date1[2] - date2[2] || date1[0] - date2[0] || date1[1] - date2[1];
-        }
+        return new Date(`${a.date} ${a.time} ${a.meridiem}`) - new Date(`${b.date} ${b.time} ${b.meridiem}`);
     });
 
     const embed = new Discord.MessageEmbed()
@@ -222,7 +245,7 @@ function createEmbed(color, title, description, thumbnail, footer, channel) {
                 .catch(console.error);
         } else if(title === 'Deadlines') {
             list.forEach(entry => {
-                embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date}`)
+                embed.addField(`(ID:${entry.id}) ${entry.name}`, `${entry.date} ${entry.time} ${entry.meridiem}`)
             });
                 channel.send(embed)
                 .catch(console.error);
