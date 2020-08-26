@@ -16,7 +16,7 @@ module.exports = {
             return;
         } else if(args[0].length !== 10) {
             let reply = `Invalid date format, ${message.author}`;
-            reply += `\nExample format: 01/01/2020`g
+            reply += `\nExample format: 01/01/2020`
             message.channel.send(reply);
             return;
         } else if(args[1].length !== 5) {
