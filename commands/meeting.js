@@ -16,7 +16,7 @@ module.exports = {
             return;
         } else if(args[0].length !== 10) {
             let reply = `Invalid date format, ${message.author}`;
-            reply += `\nExample format: 01/01/2020`
+            reply += `\nExample format: 01/01/2020`g
             message.channel.send(reply);
             return;
         } else if(args[1].length !== 5) {
@@ -24,11 +24,13 @@ module.exports = {
             reply += `\nExample format: 01:00`
             message.channel.send(reply);
             return;
-        } else if(args[2].toUpperCase() !== 'AM' || args[2].toUpperCase() !== 'PM') {
-            let reply = `Invalid meridiem format, ${message.author}`;
-            reply += `\nExample format: 01:00 PM`
-            message.channel.send(reply);
-            return;
+        } else if(args[2].toUpperCase() !== 'AM') {
+            if(args[2].toUpperCase() !== 'PM') {
+                let reply = `Invalid meridiem format, ${message.author}`;
+                reply += `\nExample format: 01:00 PM`
+                message.channel.send(reply);
+                return;
+            }
         }
         
         let index = 0;
