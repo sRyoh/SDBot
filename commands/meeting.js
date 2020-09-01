@@ -1,7 +1,4 @@
 const fs = require('fs');
-const Discord = require('discord.js');
-const client = new Discord.Client();
-client.meetings = require('../meetings.json');
 
 module.exports = {
     name: 'meeting',
@@ -9,6 +6,8 @@ module.exports = {
 	args: true,
 	usage : '<MM/DD/YYYY> <HH:MM> <AM/PM>',
 	execute(message, args) {
+        message.client.meetings = require('../meetings.json');
+
         if(args.length !== 3) {
             let reply = `You didn't the proper arguments, ${message.author}`;
             reply += `\nType !help or !help meeting for the proper usage.`;
@@ -34,19 +33,19 @@ module.exports = {
         }
         
         let index = 0;
-        if(!client.meetings.length) {
-            for(meeting in client.meetings) {
+        if(!message.client.meetings.length) {
+            for(meeting in message.client.meetings) {
                 index = meeting;
             }
         }
 
-        client.meetings[parseInt(index) + 1] = {
+        message.client.meetings[parseInt(index) + 1] = {
             date : args[0],
             time : args[1],
             meridiem : args[2].toUpperCase()
         }
 
-        fs.writeFile('./meetings.json', JSON.stringify(client.meetings, null, 4), err => {
+        fs.writeFile('./meetings.json', JSON.stringify(message.client.meetings, null, 4), err => {
             if(err) {
                 message.channel.send("error"); 
                 throw err;
