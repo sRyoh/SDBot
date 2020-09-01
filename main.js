@@ -94,7 +94,7 @@ client.on('ready', () => {
             // Adjusts for when the time is 12:MM AM 
             // Otherwise it would be -1:MM AM
             if((hour - 1) === -1) {
-                oneHourLeft = `11:${minute}`;
+                oneHourLeft = `23:${minute}`;
             }
 
             if(time === oneHourLeft) {
@@ -135,7 +135,7 @@ client.on('ready', () => {
             // Adjusts for when the time is 12:MM AM 
             // Otherwise it would be -1:MM AM
             if((hour - 1) === -1) {
-                oneHourLeft = `11:${minute}`;
+                oneHourLeft = `23:${minute}`;
             }
 
             if(time === oneHourLeft) {
