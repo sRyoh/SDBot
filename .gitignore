@@ -1,1 +1,3 @@
 config.json
+commands/ping.js
+commands/reload.js
