@@ -16,7 +16,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-const MIN_INTERVAL = 30 * 1000;
+const MIN_INTERVAL = 60 * 1000;
 
 // Event that signals the bot is running
 client.once('ready', () => {
