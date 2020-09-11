@@ -16,7 +16,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-const MIN_INTERVAL = 60 * 1000;
+const MIN_INTERVAL = 30 * 1000;
 
 // Event that signals the bot is running
 client.once('ready', () => {
@@ -29,7 +29,7 @@ client.on('ready', () => {
 
     setInterval(function () {
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        // today.setHours(today.getHours() - 4);
         let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
         
         if(time === "9:00") {
@@ -64,7 +64,7 @@ client.on('ready', () => {
         let oneDayLeft = `${('0'+(oneDayDate.getMonth() + 1)).slice(-2)}/${('0'+oneDayDate.getDate()).slice(-2)}/${oneDayDate.getFullYear()}`;
 
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        // today.setHours(today.getHours() - 4);
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
 
         // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
@@ -111,16 +111,23 @@ client.on('ready', () => {
 client.on('ready', () => {
     setInterval(function () {
         const botChannel = client.channels.cache.get(meetings_deadlines);
+        let days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        // today.setHours(today.getHours() - 4);
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
+        let day = days[today.getDay()];
 
         // Loop through JSON file and check each meeting's time
         for(meeting in client.meetings) {
             let _date = client.meetings[meeting].date;
 
-            if(_date != date) continue;
+            // If the meeting is weekly, then the format of the the date is different
+            // In the form of Monday-Sunday instead of MM/DD/YYYY
+            if(client.meetings[meeting].weekly)
+                _date = _date.toUpperCase();
+
+            if(!(_date != date || _date != day)) continue;
             
             let hour = client.meetings[meeting].time[0] + client.meetings[meeting].time[1];
             let minute = client.meetings[meeting].time[3] + client.meetings[meeting].time[4];
@@ -144,7 +151,11 @@ client.on('ready', () => {
             } else if(time === _time) {
                 botChannel.send("@everyone meeting in starts now.")
                 .catch(console.error);
-                functions.deleteEvent(client, 'meeting', meeting);
+                
+                // Do not delete weekly meetings
+                if(!client.meetings[meeting].weekly) {
+                    functions.deleteEvent(client, 'meeting', meeting);
+                }
             }
         }
     }, MIN_INTERVAL);

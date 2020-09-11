@@ -1,36 +1,16 @@
 const fs = require('fs');
+const functions = require('../functions.js');
 
 module.exports = {
     name: 'deadline',
-    description: 'Create a deadline that will be pinged a week before it is due.',
+    description: 'Create a deadline that will be pinged a week, a day, and an hour before it is due.',
     args: true,
     usage: '<name> <MM/DD/YYYY> <HH:MM> <AM/PM>' ,
     execute(message, args) {
-        message.client.deadlines = require('../deadlines.json');
-
-        if(args.length !== 4) {
-            let reply = `You didn't the proper arguments, ${message.author}`;
-            reply += `\nType !help or !help deadline for the proper usage.`;
-            message.channel.send(reply);
-            return;
-        } else if(args[1].length !== 10) {
-            let reply = `Invalid date format, ${message.author}`;
-            reply += `\nExample format: 01/01/2020`
-            message.channel.send(reply);
-            return;
-        } else if(args[2].length !== 5) {
-            let reply = `Invalid time format, ${message.author}`;
-            reply += `\nExample format: 01:00`
-            message.channel.send(reply);
-            return;
-        } else if(args[3].toUpperCase() !== 'AM') {
-            if(args[3].toUpperCase() !== 'PM') {
-                let reply = `Invalid meridiem format, ${message.author}`;
-                reply += `\nExample format: 01:00 PM`
-                message.channel.send(reply);
-                return;
-            }
-        }
+        if(!functions.checkArgsLength('deadline', args.length, 4, message)) return;
+        if(!functions.checkDateFormat(args[1], message)) return;
+        if(!functions.checkTimeFormat(args[2], message)) return;
+        if(!functions.checkMeridiemFormat(args[3], message)) return;
         
         let index = 0;
         if(!message.client.deadlines.length) {
@@ -39,7 +19,7 @@ module.exports = {
             }
         }
 
-        message.client.deadlines[parseInt(index) + 1] = {
+        message.client.deadlines[parseInt(index, 10) + 1] = {
             name : args[0],
             date : args[1],
             time : args[2],
