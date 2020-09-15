@@ -152,7 +152,7 @@ function checkDateFormat(date, message) {
 
     // If leap year, adjust February to 29
     if((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
-        monthLength[1] = 29;
+        daysInMonth[1] = 29;
     }
 
     // Make sure the number of days is within the range of the month

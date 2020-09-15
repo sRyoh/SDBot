@@ -127,7 +127,7 @@ client.on('ready', () => {
             if(client.meetings[meeting].weekly)
                 _date = _date.toUpperCase();
 
-            if(!(_date != date || _date != day)) continue;
+            if(_date != date && _date != day) continue;
             
             let hour = client.meetings[meeting].time[0] + client.meetings[meeting].time[1];
             let minute = client.meetings[meeting].time[3] + client.meetings[meeting].time[4];
