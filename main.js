@@ -103,7 +103,7 @@ client.on('ready', () => {
             } else if(time === _time && skip == 1) {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a week.`)
                 .catch(console.error);
-            } else if(time === 10 _time && skip == 2) {
+            } else if(time === _time && skip == 2) {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
                 .catch(console.error);
             }
