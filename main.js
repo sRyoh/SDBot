@@ -56,10 +56,12 @@ client.on('ready', () => {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
         let oneWeekDate = new Date();
+        oneWeekDate.setHours(oneWeekDate.getHours() - 4);
         oneWeekDate.setDate(oneWeekDate.getDate() + 7);
         let oneWeekLeft = `${('0'+(oneWeekDate.getMonth() + 1)).slice(-2)}/${('0'+oneWeekDate.getDate()).slice(-2)}/${oneWeekDate.getFullYear()}`;
 
         let oneDayDate = new Date();
+        oneDayDate.setHours(oneDayDate.getHours() - 4);
         oneDayDate.setDate(oneDayDate.getDate() + 1);
         let oneDayLeft = `${('0'+(oneDayDate.getMonth() + 1)).slice(-2)}/${('0'+oneDayDate.getDate()).slice(-2)}/${oneDayDate.getFullYear()}`;
 
@@ -70,16 +72,12 @@ client.on('ready', () => {
         // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
         for(deadline in client.deadlines) {
             let _date = client.deadlines[deadline].date;
+            let skip = 0;
 
-            if(_date === oneWeekLeft) {
-                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a week.`)
-                .catch(console.error);
-            } else if(_date === oneDayLeft) {
-                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
-                .catch(console.error);
-            }
+            if(_date === oneWeekLeft) { skip = 1 } 
+            else if(_date === oneDayLeft) { skip = 2; }
 
-            if(_date != date) continue;
+            if(_date != date && skip == 0) continue;
 
             let hour = client.deadlines[deadline].time[0] + client.deadlines[deadline].time[1];
             let minute = client.deadlines[deadline].time[3] + client.deadlines[deadline].time[4];
@@ -102,6 +100,12 @@ client.on('ready', () => {
                 .catch(console.error);
             } else if(time === _time) {
                 functions.deleteEvent(client, 'deadline', deadline);
+            } else if(time === _time && skip == 1) {
+                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a week.`)
+                .catch(console.error);
+            } else if(time === 10 _time && skip == 2) {
+                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
+                .catch(console.error);
             }
         }
     }, MIN_INTERVAL);
