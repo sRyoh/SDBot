@@ -95,17 +95,17 @@ client.on('ready', () => {
                 oneHourLeft = `23:${minute}`;
             }
 
-            if(time === oneHourLeft) {
-                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in an hour.`)
-                .catch(console.error);
-            } else if(time === _time) {
-                functions.deleteEvent(client, 'deadline', deadline);
-            } else if(time === _time && skip == 1) {
+            if(time === _time && skip == 1) {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a week.`)
                 .catch(console.error);
             } else if(time === _time && skip == 2) {
                 botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in a day.`)
                 .catch(console.error);
+            } else if(time === oneHourLeft) {
+                botChannel.send(`@everyone ${client.deadlines[deadline].name} is due in an hour.`)
+                .catch(console.error);
+            } else if(time === _time) {
+                functions.deleteEvent(client, 'deadline', deadline);
             }
         }
     }, MIN_INTERVAL);
