@@ -29,7 +29,7 @@ client.on('ready', () => {
 
     setInterval(function () {
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        today.setHours(today.getHours() - 3);
         let time = `${today.getHours()}:${('0'+today.getMinutes()).slice(-2)}`;
         
         if(time === "9:00") {
@@ -56,17 +56,17 @@ client.on('ready', () => {
         const botChannel = client.channels.cache.get(meetings_deadlines);
 
         let oneWeekDate = new Date();
-        oneWeekDate.setHours(oneWeekDate.getHours() - 4);
+        oneWeekDate.setHours(oneWeekDate.getHours() - 3);
         oneWeekDate.setDate(oneWeekDate.getDate() + 7);
         let oneWeekLeft = `${('0'+(oneWeekDate.getMonth() + 1)).slice(-2)}/${('0'+oneWeekDate.getDate()).slice(-2)}/${oneWeekDate.getFullYear()}`;
 
         let oneDayDate = new Date();
-        oneDayDate.setHours(oneDayDate.getHours() - 4);
+        oneDayDate.setHours(oneDayDate.getHours() - 3);
         oneDayDate.setDate(oneDayDate.getDate() + 1);
         let oneDayLeft = `${('0'+(oneDayDate.getMonth() + 1)).slice(-2)}/${('0'+oneDayDate.getDate()).slice(-2)}/${oneDayDate.getFullYear()}`;
 
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        today.setHours(today.getHours() - 3);
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
 
         // Loop through JSON file and check if it is a week, a day, and an hour before a deadline is due
@@ -118,7 +118,7 @@ client.on('ready', () => {
         let days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
         let today = new Date();
-        today.setHours(today.getHours() - 4);
+        today.setHours(today.getHours() - 3);
         let date = `${('0'+(today.getMonth() + 1)).slice(-2)}/${('0'+today.getDate()).slice(-2)}/${today.getFullYear()}`;
         let day = days[today.getDay()];
 
