@@ -1,7 +1,11 @@
 # SDBot
 
 A Discord Bot that's designed to notify users within the server about upcoming events.
+
 Mainly used as a way to maintain consistency and punctuality during COVID quarantine for my group's online meetings using Discord.
+
+Makes use of Discord's embeds to list out the upcoming deadlines and messages in a clean and structured way.
+
 
 ## Comands
 * !deadline
