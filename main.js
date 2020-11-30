@@ -16,7 +16,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-const MIN_INTERVAL = 60 * 1000;
+const MIN_INTERVAL = 10 * 1000;
 
 // Event that signals the bot is running
 client.once('ready', () => {
@@ -74,7 +74,7 @@ client.on('ready', () => {
             let _date = client.deadlines[deadline].date;
             let skip = 0;
 
-            if(_date === oneWeekLeft) { skip = 1 } 
+            if(_date === oneWeekLeft) { skip = 1; } 
             else if(_date === oneDayLeft) { skip = 2; }
 
             if(_date != date && skip == 0) continue;
